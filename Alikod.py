@@ -14,33 +14,32 @@ def driver(request):
         driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
     elif request.param == "edge":
         driver = webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()))
-    driver.implicitly_wait(10)
+    driver.implicitly_wait(3)
     yield driver
     driver.quit()
 
 def test_nasa_wikipedia_page_logo(driver):
     driver.get("https://en.wikipedia.org/wiki/NASA")
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH,'/html/body/div[1]/header/div[1]/a/span/img[1]')))
+    WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH,'/html/body/div[1]/header/div[1]/a/span/img[1]')))
     logo = driver.find_element(By.XPATH, '/html/body/div[1]/header/div[1]/a/span/img[1]')
     assert logo.size['width'] == 160 and logo.size['height'] == 160
 
 def test_nasa_wikipedia_page_table(driver):
     driver.get("https://en.wikipedia.org/wiki/NASA")
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="mw-content-text"]/div[1]/table[3]')))
+    WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, '//*[@id="mw-content-text"]/div[1]/table[3]')))
     table = driver.find_element(By.XPATH, '//*[@id="mw-content-text"]/div[1]/table[3]')
     assert table.value_of_css_property("box-sizing") == "border-box"
 
 def test_nasa_wikipedia_page_background(driver):
     driver.get("https://en.wikipedia.org/wiki/NASA")
-    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '/html/body')))
+    WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, '/html/body')))
     body = driver.find_element(By.XPATH, '/html/body')
     assert body.value_of_css_property("background-color") == "rgba(248, 249, 250, 1)"
-
 
 def test_nasa_wikipedia_page(driver):
     driver.get("https://en.wikipedia.org/wiki/NASA")
 
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="mw-content-text"]/div[1]/ul[5]')))
+    WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, '//*[@id="mw-content-text"]/div[1]/ul[5]')))
 
     ul_element = driver.find_element(By.XPATH, '//*[@id="mw-content-text"]/div[1]/ul[5]')
     list_items = ul_element.find_elements(By.TAG_NAME, 'li')
@@ -54,6 +53,5 @@ def test_nasa_wikipedia_page(driver):
             assert "sans serif" in font_family
             assert 12.6 == font_size
 
-
 if __name__ == "__main__":
-    pytest.main([__file__])
+    pytest.main([__file__, '--html=report.html', '--self-contained-html'])
